@@ -5,34 +5,40 @@ on:
     branches: ["main"]
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: self-hosted
-    env:
-      VITE_API_BASE_URL: ${{secrets.VITE_API_BASE_URL}}
-      PORT: ${{secrets.SERVICE_PORT}}
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Login to DockerHub
-        env:
-          DOCKER_USERNAME: ${{secrets.DOCKER_HUB_USERNAME}}
-          DOCKER_PASSWORD: ${{secrets.DOCKER_HUB_PASSWORD}}
-        run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Create .env file (frontend)
+      - name: Build Docker image
         run: |
-          echo VITE_API_BASE_URL=$VITE_API_BASE_URL >> .env
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio:${{ github.sha }} \
+                       -t ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio:latest .
 
-      - name: Build frontend Docker image
-        run: docker build -t ${{secrets.DOCKER_HUB_USERNAME}}/portfolio-frontend:latest .
-
-      - name: Push frontend Docker image
-        run: docker push ${{secrets.DOCKER_HUB_USERNAME}}/portfolio-frontend:latest
-      
-      - name: Deploy container
+      - name: Push Docker image
         run: |
-          docker stop portfolio-frontend || true
-          docker rm portfolio-frontend || true
-          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-frontend:latest
-          docker run -d --name portfolio-frontend -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio-frontend:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/portfolio:latest
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/portfolio \
+            portfolio=${{ secrets.DOCKER_HUB_USERNAME }}/portfolio:${{ github.sha }} \
+            --namespace default
+          kubectl rollout status deployment/portfolio \
+            --namespace default \
+            --timeout=120s
+
+      - name: Clean up kubeconfig
+        if: always()
+        run: rm -f ~/.kube/config

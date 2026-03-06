@@ -3,49 +3,49 @@ import { CiShare1 } from "react-icons/ci";
 
 export default function Projects() {
   return (
-    <div className="flex items-center justify-center mb-10">
-      <div className="mt-30 mx-10 sm:mx-24 md:mx-30 lg:mx-60 xl:mx-88 w-full">
-        <div className="">
-          <div>
-            <h1 className="flex flex-col text-4xl">
-              <span>Work.</span>
-              <span>Hobby.</span>
-              <span>Open Source.</span>
-            </h1>
-          </div>
-          <div className="mt-2">
-            <p>
-              I'm obsessed with side projects and building in{" "}
-              <a
-                className="border-b"
-                target="_blank"
-                href="https://github.com/shavb"
-              >
-                public.
-              </a>
-            </p>
-          </div>
+    <div className="flex items-center justify-center mb-16">
+      <div className="mt-28 mx-6 sm:mx-24 md:mx-30 lg:mx-60 xl:mx-88 w-full">
+
+        {/* Page heading */}
+        <div className="mb-8">
+          <h1 className="flex flex-col text-4xl font-bold leading-tight">
+            <span className="gradient-text">Work.</span>
+            <span className="text-slate-300">Hobby.</span>
+          </h1>
         </div>
-        <div className="">
-          <h1 className="text-2xl mt-10 border-b-2">All Projects</h1>
-          <div className="flex mx-2 mt-8">
+
+        <div>
+          <h2 className="text-xs tracking-widest uppercase text-indigo-400 mb-4">
+            All Projects
+          </h2>
+          <div className="flex flex-col gap-4">
             {ProjectsData.map((project) => (
-              <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-2 border-1 rounded-2xl w-full p-3">
-                <div className="object-fit border-b-1 lg:border-r-1 rounded-2xl overflow-hidden">
-                  <img src={project.img_url} alt={project.Name} />
+              <div
+                key={project.id}
+                className="bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden flex flex-col lg:flex-row hover:border-indigo-500/30 hover:bg-white/[0.05] transition-all duration-300"
+              >
+                <div className="lg:w-1/2 overflow-hidden">
+                  <img
+                    src={project.img_url}
+                    alt={project.Name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div
-                  key={project.id}
-                  className="mt-2 order-1 lg:flex flex-col items-center justify-center"
-                >
-                  <h1 className="uppercase text-2xl flex">
-                    {project.Name}{" "}
-                    <span className="ml-2 cursor-pointer">
-                      <a href={project.link}></a>
-                      <CiShare1 />
-                    </span>
-                  </h1>
-                  <p>{project.description}</p>
+                <div className="lg:w-1/2 p-6 flex flex-col justify-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <h1 className="uppercase text-lg font-semibold text-slate-100 tracking-wide">
+                      {project.Name}
+                    </h1>
+                    <a
+                      href={project.link}
+                      className="text-indigo-400 hover:text-indigo-300 transition-colors"
+                    >
+                      <CiShare1 size={18} />
+                    </a>
+                  </div>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    {project.description}
+                  </p>
                 </div>
               </div>
             ))}

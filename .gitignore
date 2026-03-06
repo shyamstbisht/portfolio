@@ -26,3 +26,16 @@ dist-ssr
 *.sln
 *.sw?
 coverage
+
+# Build artifacts
+*.tsbuildinfo
+
+# Docker
+.dockerignore
+
+# Kubernetes secrets / local overrides
+k8s/*.secret.yaml
+k8s/*.local.yaml
+
+# OS
+Thumbs.db

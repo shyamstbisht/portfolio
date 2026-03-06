@@ -1,7 +1,6 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
-import Buttons3D from "./geometry/Buttons3D";
 import EyesModel from "./models/Eyes";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -30,7 +29,6 @@ export default function MainScene() {
             <EyesModel position={[0, 0, 0]} />
             <meshStandardMaterial color="#90a4ae" />
           </mesh>
-          {/* <Buttons3D /> */}
         </group>
       </group>
     </>

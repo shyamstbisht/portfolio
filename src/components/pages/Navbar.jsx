@@ -1,62 +1,43 @@
-import { useEffect, useRef, useState } from "react";
-import { RxHamburgerMenu } from "react-icons/rx";
-import NavbarTabElements from "../../features/NavbarTabElements";
+import { useEffect, useState } from "react";
 import { SiLinuxserver } from "react-icons/si";
-import { Link } from "react-router";
+
+const sections = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "projects", label: "Projects" },
+];
 
 export default function Navbar() {
-  const [activeMenu, setActiveMenu] = useState(false);
-
-  const menuRef = useRef(null);
-
-  const handleMenu = () => {
-    setActiveMenu(!activeMenu);
-  };
-  const closeMenu = (e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target)) {
-      setActiveMenu(false);
-    }
-  };
-
-  const handleMenuButton = () => {
-    setActiveMenu(false);
-  };
+  const [activeSection, setActiveSection] = useState("Home");
 
   useEffect(() => {
-    document.addEventListener("mousedown", closeMenu);
-    return () => {
-      document.removeEventListener("mousedown", closeMenu);
+    const handleScroll = () => {
+      const scrollY = window.scrollY + window.innerHeight / 3;
+
+      for (const { id, label } of [...sections].reverse()) {
+        const el = document.getElementById(id);
+        if (el && scrollY >= el.offsetTop) {
+          setActiveSection(label);
+          break;
+        }
+      }
     };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="fixed w-full top-0 flex items-center justify-center z-50 border-b bg-[#010610c6]">
-      <div className="rounded-2xl w-full px-2 sm:px-20 md:px-10 lg:mx-40 xl:mx-60">
-        <div className="px-4 flex h-16 items-center justify-between">
-          <div>
-            <Link to="/">
-              <SiLinuxserver data-testid="logo-icon" size={30} />
-            </Link>
-          </div>
-          <div className="flex h-full gap-2 items-center">
-            <NavbarTabElements className="hidden sm:flex gap-2" />
-            <div ref={menuRef} className="relative">
-              <RxHamburgerMenu
-                onClick={handleMenu}
-                className="sm:hidden"
-                size={20}
-              />
-              {activeMenu && (
-                <NavbarTabElements
-                  ref={menuRef}
-                  handleMenuButton={handleMenuButton}
-                  className="sm:flex sm:hidden absolute top-full mt-2 p-2 right-0 bg-gray-700 rounded-2xl w-40 shadow-lg z-50"
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="fixed w-full top-0 z-50 h-16 flex items-center justify-between px-6 sm:px-20 border-b border-white/[0.06] bg-[#070b14]/80 backdrop-blur-md">
+      <SiLinuxserver
+        data-testid="logo-icon"
+        size={26}
+        className="text-indigo-400"
+      />
+      <span className="text-xs tracking-widest uppercase text-slate-500">
+        {activeSection}
+      </span>
     </div>
   );
 }
