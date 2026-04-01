@@ -26,7 +26,8 @@ jobs:
   deploy:
     runs-on: self-hosted
     needs: build
-    stpes:
+
+    steps:
       - name: Set up kubeconfig
         run: |
           mkdir -p ~/.kube
